@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: shopsphere
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+  backend:
+    build: .
+    command: npm run dev
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - '4000:4000'
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@db:5432/shopsphere
+      JWT_SECRET: supersecretkey
+      NODE_ENV: development
+    depends_on:
+      - db
+volumes:
+  postgres_data:
